@@ -1,19 +1,13 @@
-ls -al /dev/disk/by-id blkid
-cat /proc/cpuinfo lscpu dmesg lm_sensors
-sync && echo 3 > /proc/sys/vm/drop_caches
-Alt + SysRq REISUB
-e4defrag e2fsck -D smartctl -a /dev/sd hdparm -I /dev/sd
-cfdisk mkfs.ext4 -m 0 -i 8388608 /dev/sd mount -t ext4 -o noatime,commit=60 /dev/sd /mnt/1
-find / -name \*.log
-alpinelinux.org
-wiki.archlinux.org/title/Improving_performance
-wiki.archlinux.org/title/Power_management
-mitigations=off nowatchdog quiet i915.enable_fbc=1"
+ls -al /dev/disk/by-id blkid cat /proc/cpuinfo lscpu dmesg Alt + SysRq REISUB sync && echo 3 > /proc/sys/vm/drop_caches
+mount -t ext4 -o noatime,commit=60 /dev/sd /mnt/1 e4defrag e2fsck -D smartctl -a /dev/sd hdparm -I /dev/sd cfdisk mkfs.ext4 -m 1 -i 8388608 /dev/sd
+find / -name \*.log tree /sys/class/hwmon/
+mitigations=off nowatchdog quiet
 /etc/sysctl.d/99-sysctl.conf
 vm.swappiness=1
 kernel.nmi_watchdog=0
 kernel.soft_watchdog=0
-kernel.core_pattern=|/bin/false
+kernel.core_pattern=/bin/null
+vm.dirty_writeback_centisecs=6000
 /etc/systemd/journald.conf
 Storage=none
 rm -r /var/log/journal/
@@ -23,7 +17,7 @@ options snd_hda_intel power_save=1
 blacklist pcspkr
 blacklist snd-pcsp
 .config/sway/config
-set $term foot
+output VGA-1 mode 1280x1024@75Hz
 input type:pointer {
 scroll_factor 2
 }
@@ -35,16 +29,15 @@ hide_edge_borders smart
 bindsym XF86AudioRaiseVolume exec amixer -q set Master 2+
 bindsym XF86AudioLowerVolume exec amixer -q set Master 2-
 bindsym XF86AudioMute exec amixer -q set Master toggle
-output VGA-1 mode 1280x1024@75Hz
 xwayland disable
 for_window [app_id="mpv"] floating enable
+bindsym KP_Insert exec swaymsg "output VGA-1 power toggle"
 
+hwdec=vaapi,auto
+vo=dmabuf-wayland
 font=Liberation Mono:size=8:antialias=false:autohint=false
-
 ratbagctl "Logitech G103 Prodigy Gaming Mouse" led 0 set mode off
 tar -zcf - dir | openssl enc -aes256 -pbkdf2 -pass pass: -out .tgz
 openssl enc -d -aes256 -pbkdf2 -pass pass: -in .tgz | tar -xz
-swaymsg "output * dpms on"
-swaymsg "output * dpms off"
-
 apk -U upgrade --no-cache; apk -U add --no-cache ; apk cache clean; apk del -r --no-cache --purge ;
+pacman -Syucc; rm /var/cache/pacman/pkg/*; pacman -Qdttq | pacman -Rnss -; pacman -Rnssc ; 
